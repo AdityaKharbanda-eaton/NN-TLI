@@ -2,3 +2,6 @@
 pyproject.toml
 .venv
 uv.lock
+*.pkl
+__pycache__
+classification.png

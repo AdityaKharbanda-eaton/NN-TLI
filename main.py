@@ -6,7 +6,7 @@ from model import *
 
 torch.set_default_dtype(torch.float64)
 
-with open('naval_dataset.pkl', 'rb') as f:
+with open('dataset/naval_dataset.pkl', 'rb') as f:
     train_data, train_label, val_data, val_label = pickle.load(f)
 train_data = torch.tensor(train_data, requires_grad=False)
 train_label = torch.tensor(train_label, requires_grad=False)

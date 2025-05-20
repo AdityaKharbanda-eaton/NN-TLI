@@ -5,3 +5,11 @@ uv.lock
 *.pkl
 __pycache__
 classification.png
+moe_data.csv
+sag_healthy.csv
+Waveform_CSVs
+final_waveform_summary.csv
+rough_work.ipynb
+denormalized_data.ipynb
+explore_data.ipynb
+extract_spatial_data.ipynb

@@ -135,8 +135,8 @@ for i in range(fd):
             ax = axes[id]
         else:
             ax = axes[i,id]
-        # ax.set_xlim((0,25))
-        # ax.set_ylim((0,50))
+        ax.set_xlim((0,80))
+        ax.set_ylim((0,50))
         nsample = 100
         plot_timed_data(file, ti, ax, nsample)
         # plot_false_data(false_data, false_label, ti, ax, nsample)

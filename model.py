@@ -11,45 +11,45 @@ from utils import *
 torch.set_default_dtype(torch.float64)
 
 def nntli_train(train_data, train_label, val_data, val_label, dataname):
-    nsample = train_data.shape[0]
-    dim = train_data.shape[1]
-    length = train_data.shape[-1]
-    val_nsample = val_data.shape[0]
+    nsample = train_data.shape[0] # number of samples (963 in sag_healthy)
+    dim = train_data.shape[1] # number of parameters (2 in sag_healthy)
+    length = train_data.shape[-1] # length of time series (1227 in sag_healthy)
+    val_nsample = val_data.shape[0] # number of samples (413 in sag_healthy)
 
     # initialization
-    STE= STEstimator.apply
-    clip = Clip.apply
+    STE= STEstimator.apply # convert any input tensor to 0,1 values
+    clip = Clip.apply # convert any input tensor to -1,1 values
 
-    f_num = 8
-    f_conj = 1
+    f_num = 8 # What's this for ? -> As per copilot: 4 for F and 4 for G
+    f_conj = 1 # What's this for ?
 
     t1 = np.zeros((f_num,1))
-    t1 = torch.tensor(t1, requires_grad=True)
+    t1 = torch.tensor(t1, requires_grad=True) # (8,1) tensor of zeros
     t2 = np.ones((f_num,1))*(length-1)
-    t2 = torch.tensor(t2, requires_grad=True)
+    t2 = torch.tensor(t2, requires_grad=True) # (8,1) tensor consisting of only 1227 - 1 = 1226
 
-    Wc = torch.ones((f_conj,f_num), requires_grad=True)
-    Wd = torch.ones(f_conj, requires_grad=False)
+    Wc = torch.ones((f_conj,f_num), requires_grad=True) # (1,8) tensor of ones
+    Wd = torch.ones(f_conj, requires_grad=False) # (1) tensor of ones
 
-    a = np.array([[1,0],[-1,0],[0,1],[0,-1],[1,0],[-1,0],[0,1],[0,-1]]).reshape(f_num,1,dim)
-    a = torch.tensor(a, dtype=torch.float64, requires_grad=False)
-    b = torch.rand((f_num,1), requires_grad=True)
+    a = np.array([[1,0],[-1,0],[0,1],[0,-1],[1,0],[-1,0],[0,1],[0,-1]]).reshape(f_num,1,dim) # (8,1,2) numpy array
+    a = torch.tensor(a, dtype=torch.float64, requires_grad=False) # (8,1,2) tensor of float64
+    b = torch.rand((f_num,1), requires_grad=True) # (8,1) tensor of random values from a uniform distribution in [0,1]
 
-    at = torch.tensor(1, requires_grad=False)
-    W = RMinTimeWeight(at,t1,t2)
-    W1 = torch.tensor(range(length), requires_grad=False)
+    at = torch.tensor(1, requires_grad=False) # (1) tensor of 1 (eeta from paper)
+    W = RMinTimeWeight(at,t1,t2) # object of class RMinTimeWeight
+    W1 = torch.tensor(range(length), requires_grad=False) # tensor of (0,1,2,...,1226) of shape (1227)
 
     Formula = []
     Spatial = []
     tl1 = 0
-    tl2 = length-1
+    tl2 = length-1 # 1226
 
     j = 0
     beta = 1
     am = 0
     scale = 2.5
     # scale = 1
-    fn = int(f_num/2)
+    fn = int(f_num/2) # fn = 4
     for i in range(fn):
         Formula.append(Eventually(a[j],b[j],tl1,tl2))
         Formula[j].init_sparsemax(beta,am,scale,2)
